@@ -1,0 +1,24 @@
+
+<button
+  tedi-button
+  cdkOverlayOrigin
+  #trigger="cdkOverlayOrigin"
+  tabindex="0"
+  [id]="buttonId()"
+  [attr.aria-expanded]="isOpen()"
+  [variant]="variant()"
+  [size]="'small'"
+  [class.active]="isOpen()"
+  (click)="toggleIsOpen()"
+  (keydown.enter)="toggleIsOpen()"
+  (keydown.space)="$event.preventDefault(); toggleIsOpen()"
+  (keydown.arrowdown)="$event.preventDefault(); toggleIsOpen()"
+>
+  <ng-content select="[tedi-dropdown-button-label]">
+    {{ activeOption()!.label | tediTranslate }}
+  </ng-content>
+  <ng-content select="[tedi-dropdown-icon]">
+    <tedi-icon class="teis-status-badge__icon" name="expand_more" />
+  </ng-content>
+</button>
+

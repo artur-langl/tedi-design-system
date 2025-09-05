@@ -1,0 +1,37 @@
+@let listboxId = `status-dropdown-listbox-${buttonId()}`;
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="trigger"
+  [cdkConnectedOverlayOpen]="isOpen() ?? false"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+  (backdropClick)="toggleIsOpen(false)"
+  (detach)="toggleIsOpen(false)"
+>
+  <tedi-card spacing="none" [style.min-width.px]="dropdownWidth()">
+    <tedi-card-content>
+      <ul
+        [id]="listboxId"
+        cdkListbox
+        cdkListboxUseActiveDescendant
+        [cdkListboxValue]="activeOption() ? [activeOption()!.value] : []"
+        (cdkListboxValueChange)="handleValueChange($event)"
+      >
+        @for (option of dropdownOptions(); track option.value) {
+          <li
+            tedi-dropdown-item
+            class="teis-status-badge__option"
+            [cdkOption]="option.value"
+            [cdkOptionDisabled]="!!option.disabled"
+            [selected]="activeOption()?.value === option.value"
+            [disabled]="!!option.disabled"
+            [tabindex]="option.disabled ? -1 : 0"
+          >
+            <span>{{ option.label | tediTranslate }}</span>
+          </li>
+        }
+      </ul>
+    </tedi-card-content>
+  </tedi-card>
+</ng-template>
