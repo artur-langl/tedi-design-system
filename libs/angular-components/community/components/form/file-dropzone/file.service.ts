@@ -12,10 +12,10 @@ export class FileService {
   maxSize = 0;
   accept = "";
   mode: FileInputMode = "append";
-  uploadState = signal<ValidationState>("none");
   validators: DropzoneValidatorFunction[] = [];
 
-  protected _files = signal<FileDropzone[]>([]);
+  private uploadState = signal<ValidationState>("none");
+  private _files = signal<FileDropzone[]>([]);
 
   private _translateService = inject(TediTranslationService);
 
@@ -23,6 +23,46 @@ export class FileService {
     return this._files.asReadonly();
   }
 
+  /**
+   * Read data recursively from a dataTransfer object, giving you a flat list of files.
+   */
+  public async recursiveDataRead(dataTransfer: DataTransfer): Promise<File[]> {
+    const items = dataTransfer.items;
+    if (!items) {
+      return [];
+    }
+    const files: File[] = [];
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i].webkitGetAsEntry();
+      if (item) {
+        files.push(...this.traverseFileTree(item, ""));
+      }
+    }
+    return files;
+  }
+
+  private traverseFileTree = (item: FileSystemDirectoryEntry, path: string) => {
+    const files: File[] = [];
+
+    if (item.isFile) {
+      item.file((file: File) => {
+        files.push(file);
+      });
+    } else if (item.isDirectory) {
+      const dirReader = item.createReader();
+      dirReader.readEntries((entries) => {
+        for (const entry of entries) {
+          this.traverseFileTree(entry, path + item.name + "/");
+        }
+      });
+    }
+    return files;
+  };
+
+  /**
+   * Adds files to the current file list, handling duplicates based on the input mode.
+   *
+   */
   public async addFiles(files: FileDropzone[] | File[]): Promise<string[]> {
     let newFiles = this.normalizeFiles(files);
     const currentFiles = this.files();

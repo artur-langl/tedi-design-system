@@ -69,3 +69,16 @@ export type DropzoneValidatorFunction = (
   file: FileDropzone,
   translate: (key: string, ...args: unknown[]) => string
 ) => string | undefined;
+
+// add isFile isDirectory to File interface
+declare global {
+  interface FileSystemEntry {
+    /**
+     * https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/file
+     */
+    file: (
+      successCallback: (file: File) => void,
+      errorCallback?: (err: DOMException) => void
+    ) => void;
+  }
+}

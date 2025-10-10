@@ -206,6 +206,8 @@ export class FileDropzoneComponent implements ControlValueAccessor, OnInit {
     position: "left",
   }));
 
+  files = this._fileService.files;
+
   constructor() {
     effect(() => {
       this._fileService.maxSize = this.maxSize();
@@ -215,43 +217,9 @@ export class FileDropzoneComponent implements ControlValueAccessor, OnInit {
     });
   }
 
-  fileClasses = (file: FileDropzone): string => {
-    const classList = ["tedi-file-dropzone__file-item"];
-
-    if (file.className) {
-      classList.push(...file.className);
-    }
-
-    if (file.fileStatus != "none") {
-      classList.push(`tedi-file-dropzone__file-item--${file.fileStatus}`);
-    }
-
-    return classList.join(" ");
-  };
-
-  tooltipClasses = (file: FileDropzone): string => {
-    const classes = ["tedi-file-dropzone__tooltip"];
-    if (file.helper?.type) {
-      classes.push(
-        "tedi-file-dropzone__tooltip--" + file.helper.type || "hint"
-      );
-    }
-
-    return classes.join(" ");
-  };
-
-  files = this._fileService.files;
-
   ngOnInit(): void {
     this.addFiles(this.defaultFiles());
   }
-
-  selectionChange = (event: Event) => {
-    const fileList = (event.target as HTMLInputElement).files;
-    const files = Array.from(fileList || []);
-    this.addFiles(files);
-    this.fileInputElement().nativeElement.value = "";
-  };
 
   @HostListener("blur")
   onBlur() {
@@ -293,6 +261,38 @@ export class FileDropzoneComponent implements ControlValueAccessor, OnInit {
 
     const files = Array.from(event.dataTransfer.files);
     this.addFiles(files);
+  };
+
+  fileClasses = (file: FileDropzone): string => {
+    const classList = ["tedi-file-dropzone__file-item"];
+
+    if (file.className) {
+      classList.push(...file.className);
+    }
+
+    if (file.fileStatus != "none") {
+      classList.push(`tedi-file-dropzone__file-item--${file.fileStatus}`);
+    }
+
+    return classList.join(" ");
+  };
+
+  tooltipClasses = (file: FileDropzone): string => {
+    const classes = ["tedi-file-dropzone__tooltip"];
+    if (file.helper?.type) {
+      classes.push(
+        "tedi-file-dropzone__tooltip--" + file.helper.type || "hint"
+      );
+    }
+
+    return classes.join(" ");
+  };
+
+  selectionChange = (event: Event) => {
+    const fileList = (event.target as HTMLInputElement).files;
+    const files = Array.from(fileList || []);
+    this.addFiles(files);
+    this.fileInputElement().nativeElement.value = "";
   };
 
   async addFiles(files: FileDropzone[] | File[]) {
